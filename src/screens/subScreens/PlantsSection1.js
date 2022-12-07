@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { NavLink, useParams } from "react-router-dom";
 import styled from "styled-components";
 import {
@@ -191,6 +191,13 @@ const PlantsSection1 = () => {
   const { category } = useParams();
   const [range, setRange] = useState([0, 100]);
 
+  const filteredData = useMemo(() => {
+    return data?.filter(({ price }) => {
+      console.log(price >= range[0] / 2, price);
+      return price >= range[0] / 2 && price <= range[1] / 2;
+    });
+  }, [data, range]);
+
   const rangeHandle = (event, newValue, activeThumb) => {
     if (!Array.isArray(newValue)) {
       return;
@@ -271,7 +278,7 @@ const PlantsSection1 = () => {
             <TextPath>Home / {data[0]?.category}</TextPath>
             <HeadingRight>{data[0]?.category}</HeadingRight>
             <ShowingResultAndSortingBox>
-              <TextRight>Showing all {data.length} results</TextRight>
+              <TextRight>Showing all {filteredData.length} results</TextRight>
               <InputSelect>
                 <Option>Default sorting</Option>
                 <Option>Sort by popularity</Option>
@@ -282,12 +289,12 @@ const PlantsSection1 = () => {
               </InputSelect>
             </ShowingResultAndSortingBox>
             <RightCardBox>
-              {data?.map((x, i) => {
+              {filteredData?.map((x, i, a) => {
                 return i % 2 ? null : (
-                  <Row>
-                    <FeaturedPlantsCardBig data={data[i]} size={true} />
-                    {data[i + 1] && (
-                      <FeaturedPlantsCardBig data={data[i + 1]} size={true} />
+                  <Row key={i}>
+                    <FeaturedPlantsCardBig data={a[i]} size={true} />
+                    {a[i + 1] && (
+                      <FeaturedPlantsCardBig data={a[i + 1]} size={true} />
                     )}
                   </Row>
                 );
